@@ -4,545 +4,635 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOA 견적서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  font-size: 14px;
+  background: #F3F4F6;
+  color: #000;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
 
-  .app-header {
-    background: #1a1a2e;
-    color: white;
-    padding: 14px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .app-header .logo { font-size: 20px; font-weight: 700; letter-spacing: 2px; }
-  .app-header .logo span { color: #e8b86d; }
-  .header-actions { display: flex; gap: 10px; }
-  .btn {
-    padding: 8px 18px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-  .btn-primary { background: #e8b86d; color: #1a1a2e; }
-  .btn-primary:hover { background: #d4a055; }
-  .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.4); }
-  .btn-outline:hover { background: rgba(255,255,255,0.1); }
-  .btn-danger { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; border-radius: 4px; }
-  .btn-danger:hover { background: #c0392b; }
-  .btn-add { background: #27ae60; color: white; padding: 8px 16px; font-size: 13px; border-radius: 6px; width: 100%; }
-  .btn-add:hover { background: #219a52; }
+/* ── App Bar (web-only) ── */
+.app-bar {
+  background: #0432FF;
+  color: #fff;
+  padding: 0 36px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-bar-logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.app-bar-actions { display: flex; gap: 8px; }
+.btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-white { background: #fff; color: #0432FF; }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.45); }
+.btn-blue { background: #0432FF; color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 4px; }
+.btn-danger { background: #EF4444; color: #fff; }
+.btn-add-row { width: 100%; padding: 9px; background: #F9FAFB; border: 1px dashed #D1D5DB; border-radius: 6px; color: #6B7280; font-family: 'Pretendard', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+.btn-add-row:hover { background: #F0F2FF; border-color: #0432FF; color: #0432FF; }
 
-  .container { max-width: 980px; margin: 30px auto; padding: 0 20px 60px; }
+/* ── Page Layout ── */
+.page { max-width: 960px; margin: 28px auto; padding: 0 20px 80px; }
 
-  .card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .card-header {
-    background: #1a1a2e;
-    color: white;
-    padding: 14px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-header .dot { width: 8px; height: 8px; border-radius: 50%; background: #e8b86d; }
-  .card-body { padding: 24px; }
+/* ── Quote Document ── */
+.doc {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10), 0 4px 24px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
 
-  /* Quote Document */
-  .quote-doc {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .quote-title-bar {
-    background: #1a1a2e;
-    padding: 28px 40px;
-    text-align: center;
-  }
-  .quote-title-input {
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid rgba(232,184,109,0.5);
-    color: white;
-    font-size: 22px;
-    font-weight: 700;
-    text-align: center;
-    width: 100%;
-    padding: 4px 0;
-    outline: none;
-    letter-spacing: 1px;
-  }
-  .quote-title-input::placeholder { color: rgba(255,255,255,0.4); }
-  .quote-title-input:focus { border-bottom-color: #e8b86d; }
+/* ── Doc Header ── */
+.doc-header {
+  padding: 28px 36px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #E5E7EB;
+}
+.doc-title-input {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #000;
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.doc-title-input::placeholder { color: #D1D5DB; }
+.doc-brand {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0432FF;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  margin-left: 24px;
+  padding-top: 6px;
+}
 
-  .quote-meta {
-    background: #f8f9ff;
-    border-bottom: 1px solid #e8eaf0;
-    padding: 16px 40px;
-    display: flex;
-    gap: 32px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-  .meta-label { color: #888; font-weight: 500; white-space: nowrap; }
-  .meta-input {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 13px;
-    outline: none;
-    font-family: inherit;
-  }
-  .meta-input:focus { border-color: #1a1a2e; }
+/* ── Doc Meta Row ── */
+.doc-meta {
+  padding: 14px 36px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  border-bottom: 1px solid #E5E7EB;
+  flex-wrap: wrap;
+  background: #FAFAFA;
+}
+.meta-field { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.meta-label { color: #6B7280; font-weight: 500; white-space: nowrap; }
+.meta-input {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 11px;
+  border: none;
+  border-bottom: 1px solid #E5E7EB;
+  outline: none;
+  background: transparent;
+  color: #000;
+  padding: 2px 0;
+}
+.meta-input:focus { border-bottom-color: #0432FF; }
+.meta-input.wide { width: 260px; }
+.meta-input.mid { width: 100px; }
 
-  /* Parties Section */
-  .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-  .party {
-    padding: 24px 40px;
-    border-right: 1px solid #e8eaf0;
-  }
-  .party:last-child { border-right: none; }
-  .party-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .party-label::after { content: ''; flex: 1; height: 1px; background: #e8eaf0; }
-  .party-name { font-size: 18px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
-  .party-detail { display: flex; font-size: 13px; margin-bottom: 5px; gap: 8px; }
-  .party-detail-label { color: #888; min-width: 48px; }
-  .party-detail-value { color: #333; }
-  .party-selector { margin-bottom: 12px; }
-  .party-selector select {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: inherit;
-    background: #f8f9ff;
-    color: #1a1a2e;
-    cursor: pointer;
-    outline: none;
-  }
-  .party-selector select:focus { border-color: #1a1a2e; }
+/* ── Parties ── */
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #E5E7EB;
+}
+.party {
+  padding: 20px 36px;
+}
+.party:first-child { border-right: 1px solid #E5E7EB; }
 
-  /* Items Table */
-  .items-section { padding: 24px 40px; }
-  .section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1a1a2e;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-title::before { content: '●'; color: #e8b86d; }
+.party-selector select {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #000;
+  background: #FFFBEB;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+.party-selector select:focus { border-color: #0432FF; }
 
-  .items-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .items-table th {
-    background: #1a1a2e;
-    color: white;
-    padding: 10px 12px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 12px;
-  }
-  .items-table th:first-child { border-radius: 8px 0 0 0; }
-  .items-table th:last-child { border-radius: 0 8px 0 0; }
-  .items-table td { padding: 8px 10px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
-  .items-table tr:hover td { background: #f8f9ff; }
-  .items-table td input, .items-table td select {
-    width: 100%;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 6px 8px;
-    font-size: 13px;
-    font-family: inherit;
-    background: transparent;
-    outline: none;
-    text-align: inherit;
-  }
-  .items-table td input:focus, .items-table td select:focus {
-    border-color: #1a1a2e;
-    background: white;
-  }
-  .items-table td.amount { text-align: right; font-weight: 600; color: #1a1a2e; padding-right: 12px; }
-  .items-table td.center { text-align: center; }
-  .items-table td.right { text-align: right; }
-  .items-table td input.right { text-align: right; }
-  .items-table tr.total-row td { background: #f8f9ff; font-weight: 700; border-top: 2px solid #1a1a2e; }
+.party-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.party-row {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+.party-key { color: #6B7280; min-width: 32px; flex-shrink: 0; }
+.party-val { color: #000; }
 
-  .col-idx { width: 36px; }
-  .col-item { width: 200px; }
-  .col-desc { }
-  .col-price { width: 110px; }
-  .col-qty { width: 70px; }
-  .col-unit { width: 60px; }
-  .col-amount { width: 120px; }
-  .col-del { width: 44px; }
+/* ── Section Label ── */
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label .bullet { color: #0432FF; font-size: 14px; }
+.section-label .sub { font-size: 11px; font-weight: 400; color: #6B7280; margin-left: 4px; }
 
-  /* Summary + Notes */
-  .bottom-section { display: grid; grid-template-columns: 1fr 340px; gap: 0; border-top: 1px solid #e8eaf0; }
-  .notes-section { padding: 24px 40px; border-right: 1px solid #e8eaf0; }
-  .notes-section textarea {
-    width: 100%;
-    min-height: 140px;
-    border: 1px solid #e8eaf0;
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 12.5px;
-    font-family: inherit;
-    line-height: 1.7;
-    resize: vertical;
-    outline: none;
-    color: #444;
-  }
-  .notes-section textarea:focus { border-color: #1a1a2e; }
+/* ── Items Table ── */
+.items-section { padding: 20px 36px; border-bottom: 1px solid #E5E7EB; }
 
-  .summary-section { padding: 24px 30px; background: #f8f9ff; }
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e8eaf0;
-    font-size: 13px;
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-label { color: #666; }
-  .summary-value { font-weight: 600; color: #1a1a2e; }
-  .summary-row.total {
-    padding: 12px 0;
-    border-top: 2px solid #1a1a2e;
-    border-bottom: none;
-    margin-top: 4px;
-  }
-  .summary-row.total .summary-label { font-size: 15px; font-weight: 700; color: #1a1a2e; }
-  .summary-row.total .summary-value { font-size: 18px; color: #e8b86d; font-weight: 800; }
+.items-table { width: 100%; border-collapse: collapse; }
+.items-table thead tr th {
+  background: #0432FF;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 10px;
+  letter-spacing: -0.01em;
+}
+.items-table thead tr th:first-child { border-radius: 0; }
+.items-table th.ta-left { text-align: left; }
+.items-table th.ta-right { text-align: right; }
+.items-table th.ta-center { text-align: center; }
 
-  /* Bank Info */
-  .bank-section {
-    padding: 16px 40px;
-    background: #fffbf2;
-    border-top: 1px solid #f0d890;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-  }
-  .bank-icon { font-size: 18px; }
-  .bank-label { color: #888; margin-right: 4px; }
-  .bank-value { font-weight: 700; color: #1a1a2e; }
+.items-table tbody tr td {
+  padding: 0;
+  border-bottom: 1px solid #E5E7EB;
+  vertical-align: middle;
+}
+.items-table tbody tr:last-child td { border-bottom: none; }
+.items-table tbody tr:hover td { background: #F9FAFB; }
 
-  /* DB Manager */
-  .db-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
-  .db-tab {
-    padding: 8px 20px;
-    border-radius: 6px 6px 0 0;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    background: #e8eaf0;
-    color: #666;
-    transition: all 0.2s;
-  }
-  .db-tab.active { background: #1a1a2e; color: white; }
-  .db-panel { display: none; }
-  .db-panel.active { display: block; }
+.cell-input {
+  display: block;
+  width: 100%;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 10px;
+  color: #000;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 9px 10px;
+}
+.cell-input::placeholder { color: #D1D5DB; }
+.cell-input:focus { background: #F0F2FF; }
+.cell-input.name { font-weight: 600; }
+.cell-input.desc { color: #6B7280; }
+.cell-input.ta-right { text-align: right; }
+.cell-input.ta-center { text-align: center; }
 
-  .db-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .db-table th { background: #f0f2f5; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e2e8; }
-  .db-table td { padding: 9px 12px; border-bottom: 1px solid #f0f2f5; }
-  .db-table tr:hover td { background: #f8f9ff; }
-  .db-table td input {
-    width: 100%;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 13px;
-    font-family: inherit;
-    background: transparent;
-    outline: none;
-  }
-  .db-table td input:focus { border-color: #1a1a2e; background: white; }
+.cell-select {
+  display: block;
+  width: 100%;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #000;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 9px 6px;
+  cursor: pointer;
+}
+.cell-select:focus { background: #F0F2FF; }
 
-  .db-add-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .db-add-row input {
-    flex: 1;
-    min-width: 100px;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
-  }
-  .db-add-row input:focus { border-color: #1a1a2e; }
+.cell-amount {
+  font-size: 10px;
+  font-weight: 700;
+  color: #000;
+  text-align: right;
+  padding: 9px 10px;
+  white-space: nowrap;
+}
+.cell-del { text-align: center; padding: 4px 6px; }
 
-  @media print {
-    body { background: white; }
-    .app-header, .db-manager-card, .btn-add, .btn-danger, .meta-label, .party-selector { display: none !important; }
-    .container { margin: 0; padding: 0; max-width: 100%; }
-    .quote-doc { box-shadow: none; border-radius: 0; }
-    .items-table td input, .items-table td select { border: none; padding: 4px; }
-    .notes-section textarea { border: none; }
-  }
+.col-no { width: 32px; }
+.col-name { width: 190px; }
+.col-desc { }
+.col-price { width: 100px; }
+.col-qty { width: 62px; }
+.col-unit { width: 54px; }
+.col-amount { width: 110px; }
+.col-del { width: 38px; }
 
-  @media (max-width: 700px) {
-    .parties { grid-template-columns: 1fr; }
-    .party { border-right: none; border-bottom: 1px solid #e8eaf0; }
-    .bottom-section { grid-template-columns: 1fr; }
-    .notes-section { border-right: none; border-bottom: 1px solid #e8eaf0; }
-    .quote-meta { gap: 12px; }
-  }
+/* ── Bottom: Notes + Summary ── */
+.doc-bottom {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+}
+
+/* Notes */
+.notes-section { padding: 20px 36px; border-right: 1px solid #E5E7EB; }
+.notes-textarea {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 11px;
+  color: #374151;
+  line-height: 1.75;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  min-height: 150px;
+  resize: none;
+  letter-spacing: -0.01em;
+}
+
+/* Summary */
+.summary-section { padding: 20px 24px; background: #FAFAFA; }
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid #E5E7EB;
+  font-size: 14px;
+}
+.sum-row:last-child { border-bottom: none; padding: 0; }
+.sum-label { font-weight: 700; color: #000; }
+.sum-value { font-weight: 700; color: #000; font-size: 12px; }
+.sum-row.final {
+  margin-top: 8px;
+  background: #0432FF;
+  border-radius: 4px;
+  padding: 10px 14px;
+  border-bottom: none;
+}
+.sum-row.final .sum-label { color: #fff; font-size: 14px; }
+.sum-row.final .sum-value { color: #fff; font-size: 16px; font-weight: 700; }
+
+/* ── Bank ── */
+.bank-section {
+  padding: 14px 36px;
+  border-top: 1px solid #E5E7EB;
+  font-size: 11px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.bank-label { color: #6B7280; }
+.bank-value { font-weight: 500; color: #000; }
+.bank-note { color: #6B7280; margin-left: auto; }
+
+/* ── DB Manager ── */
+.dbm {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.dbm-header {
+  background: #0432FF;
+  color: #fff;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.dbm-body { padding: 20px 24px; }
+
+.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab-btn {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  background: #F3F4F6;
+  color: #6B7280;
+  border-bottom: 2px solid #E5E7EB;
+}
+.tab-btn.active { background: #0432FF; color: #fff; border-bottom-color: #0432FF; }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.db-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.db-table th {
+  background: #F3F4F6;
+  font-weight: 600;
+  color: #374151;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EB;
+  white-space: nowrap;
+}
+.db-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #F3F4F6;
+  color: #374151;
+}
+.db-table tr:last-child td { border-bottom: none; }
+.db-table tr:hover td { background: #F9FAFB; }
+
+.add-row-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  padding: 12px;
+  background: #F9FAFB;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
+}
+.add-input {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  outline: none;
+  min-width: 80px;
+  flex: 1;
+}
+.add-input:focus { border-color: #0432FF; }
+
+/* ── Print ── */
+@media print {
+  body { background: #fff; font-size: 11px; }
+  .app-bar, .dbm, .btn-add-row, .btn-danger, .cell-del, .party-selector { display: none !important; }
+  .page { margin: 0; padding: 0; max-width: 100%; }
+  .doc { box-shadow: none; border-radius: 0; border: none; }
+  .cell-input, .cell-select, .meta-input, .notes-textarea, .doc-title-input { pointer-events: none; }
+}
+
+@media (max-width: 680px) {
+  .parties { grid-template-columns: 1fr; }
+  .party:first-child { border-right: none; border-bottom: 1px solid #E5E7EB; }
+  .doc-bottom { grid-template-columns: 1fr; }
+  .notes-section { border-right: none; border-bottom: 1px solid #E5E7EB; }
+  .doc-header { flex-direction: column; gap: 8px; }
+  .doc-brand { margin-left: 0; }
+}
 </style>
 </head>
 <body>
 
-<div class="app-header">
-  <div class="logo">NOA<span>&</span>ARK</div>
-  <div class="header-actions">
-    <button class="btn btn-outline" onclick="window.print()">🖨 인쇄 / PDF</button>
-    <button class="btn btn-primary" onclick="resetQuote()">+ 새 견적서</button>
+<!-- App Bar -->
+<div class="app-bar">
+  <div class="app-bar-logo">NOA&ARK · 견적서</div>
+  <div class="app-bar-actions">
+    <button class="btn btn-outline" onclick="window.print()">인쇄 / PDF</button>
+    <button class="btn btn-white" onclick="resetDoc()">새 견적서</button>
   </div>
 </div>
 
-<div class="container">
+<div class="page">
 
-  <!-- Quote Document -->
-  <div class="quote-doc" id="quoteDoc">
+  <!-- ── Quote Document ── -->
+  <div class="doc" id="quoteDoc">
 
-    <!-- Title -->
-    <div class="quote-title-bar">
-      <input type="text" class="quote-title-input" id="quoteTitle" value="코렐라인 스노우볼 2종 제작 견적서" placeholder="견적서 제목을 입력하세요">
+    <!-- Header -->
+    <div class="doc-header">
+      <input class="doc-title-input" id="docTitle" type="text" value="코렐라인 스노우볼 2종 제작 견적서" placeholder="견적서 제목을 입력하세요">
+      <div class="doc-brand">NOA&ARK</div>
     </div>
 
     <!-- Meta -->
-    <div class="quote-meta">
-      <div class="meta-item">
+    <div class="doc-meta">
+      <div class="meta-field">
         <span class="meta-label">견적일자</span>
-        <input type="date" class="meta-input" id="quoteDate">
+        <input class="meta-input" id="metaDate" type="date">
       </div>
-      <div class="meta-item">
+      <div class="meta-field">
         <span class="meta-label">No.</span>
-        <input type="text" class="meta-input" id="quoteNo" value="202601-1" style="width:110px">
+        <input class="meta-input mid" id="metaNo" value="202601-1">
       </div>
-      <div class="meta-item">
+      <div class="meta-field">
         <span class="meta-label">담당자</span>
-        <input type="text" class="meta-input" id="quoteManager" style="width:280px">
+        <input class="meta-input wide" id="metaMgr">
       </div>
     </div>
 
     <!-- Parties -->
     <div class="parties">
-      <!-- Sender (자사) -->
       <div class="party">
-        <div class="party-label">공급자 (자사)</div>
         <div class="party-selector">
-          <select id="senderSelect" onchange="fillSender(this.value)">
-            <option value="">-- 자사 선택 --</option>
+          <select id="senderSel" onchange="fillSender(this.value)">
+            <option value="">— 자사 선택 —</option>
           </select>
         </div>
-        <div class="party-name" id="senderName">-</div>
-        <div class="party-detail"><span class="party-detail-label">사업자</span><span class="party-detail-value" id="senderBiz">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">대표자</span><span class="party-detail-value" id="senderCeo">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">이메일</span><span class="party-detail-value" id="senderEmail">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">주소</span><span class="party-detail-value" id="senderAddr" style="font-size:12px">-</span></div>
+        <div class="party-name" id="sName">-</div>
+        <div class="party-row"><span class="party-key">사업자</span><span class="party-val" id="sBiz">-</span></div>
+        <div class="party-row"><span class="party-key">대표자</span><span class="party-val" id="sCeo">-</span></div>
+        <div class="party-row"><span class="party-key">이메일</span><span class="party-val" id="sEmail">-</span></div>
+        <div class="party-row"><span class="party-key">주소</span><span class="party-val" id="sAddr">-</span></div>
       </div>
-      <!-- Receiver (거래처) -->
       <div class="party">
-        <div class="party-label">수신자 (거래처)</div>
         <div class="party-selector">
-          <select id="receiverSelect" onchange="fillReceiver(this.value)">
-            <option value="">-- 거래처 선택 --</option>
+          <select id="receiverSel" onchange="fillReceiver(this.value)">
+            <option value="">— 거래처 선택 —</option>
           </select>
         </div>
-        <div class="party-name" id="receiverName">-</div>
-        <div class="party-detail"><span class="party-detail-label">사업자</span><span class="party-detail-value" id="receiverBiz">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">수신자</span><span class="party-detail-value" id="receiverContact">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">이메일</span><span class="party-detail-value" id="receiverEmail">-</span></div>
-        <div class="party-detail"><span class="party-detail-label">주소</span><span class="party-detail-value" id="receiverAddr" style="font-size:12px">-</span></div>
+        <div class="party-name" id="rName">-</div>
+        <div class="party-row"><span class="party-key">사업자</span><span class="party-val" id="rBiz">-</span></div>
+        <div class="party-row"><span class="party-key">수신자</span><span class="party-val" id="rContact">-</span></div>
+        <div class="party-row"><span class="party-key">이메일</span><span class="party-val" id="rEmail">-</span></div>
+        <div class="party-row"><span class="party-key">주소</span><span class="party-val" id="rAddr">-</span></div>
       </div>
     </div>
 
     <!-- Items -->
     <div class="items-section">
-      <div class="section-title">견적항목 <span id="itemsTotal" style="color:#e8b86d; margin-left:8px"></span></div>
+      <div class="section-label">
+        <span class="bullet">●</span> 견적항목
+        <span class="sub" id="itemsTotalLabel"></span>
+      </div>
       <table class="items-table">
         <thead>
           <tr>
-            <th class="col-idx">#</th>
-            <th class="col-item">항목</th>
-            <th class="col-desc">설명</th>
-            <th class="col-price">단가</th>
-            <th class="col-qty">수량</th>
-            <th class="col-unit">단위</th>
-            <th class="col-amount">금액</th>
+            <th class="col-no ta-center">No</th>
+            <th class="col-name ta-left">항목</th>
+            <th class="ta-left">설명</th>
+            <th class="col-price ta-right">단가</th>
+            <th class="col-qty ta-center">수량</th>
+            <th class="col-unit ta-center">단위</th>
+            <th class="col-amount ta-right">금액</th>
             <th class="col-del"></th>
           </tr>
         </thead>
-        <tbody id="itemsBody">
-        </tbody>
+        <tbody id="itemsBody"></tbody>
       </table>
-      <button class="btn-add btn" onclick="addItem()" style="margin-top:10px">+ 항목 추가</button>
+      <button class="btn-add-row" onclick="addItem()">+ 항목 추가</button>
     </div>
 
-    <!-- Bottom: Notes + Summary -->
-    <div class="bottom-section">
+    <!-- Bottom -->
+    <div class="doc-bottom">
+      <!-- Notes -->
       <div class="notes-section">
-        <div class="section-title">참고사항</div>
-        <textarea id="quoteNotes">1. 본 견적은 최종 확정된, 디자인과 사양을 반영하였습니다.
+        <div class="section-label"><span class="bullet">●</span> 참고사항</div>
+        <textarea class="notes-textarea" id="notesArea">1. 본 견적은 최종 확정된, 디자인과 사양을 반영하였습니다.
 2. 사양변경에 따른 일정변경과 견적추가는 발주사에 책임이 있습니다.
 3. 디자인 수정 요청은 1회까지 무료 제공되며, 이후 요청은 추가 비용이 발생할 수 있습니다.
 4. 납품장소는 1회, 지정된 장소로 입고합니다.
 5. 사양 : 상기 기재 내용 기준.
 6. 관세8% 적용, 14세 이상 KC인증 제외 기준입니다.
 7. 3일 운송 기준 물류비입니다. 에어물류 시, 추가비용 발생입니다.</textarea>
+
+        <div style="margin-top:20px">
+          <div class="section-label"><span class="bullet">●</span> 입금정보</div>
+          <div style="font-size:11px; color:#000; font-weight:500; margin-top:4px" id="bankDisplay">-</div>
+          <div style="font-size:11px; color:#6B7280; margin-top:3px">견적 유효기간 이내에 납부 부탁드립니다. :)</div>
+        </div>
       </div>
+
+      <!-- Summary -->
       <div class="summary-section">
-        <div class="section-title">금액 요약</div>
-        <div class="summary-row">
-          <span class="summary-label">견적항목 합계</span>
-          <span class="summary-value" id="sumItems">₩0</span>
+        <div class="section-label" style="margin-bottom:12px"><span class="bullet">●</span> 금액 요약</div>
+        <div class="sum-row">
+          <span class="sum-label">총 합계</span>
+          <span class="sum-value" id="sumTotal">₩0</span>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">공급가액</span>
-          <span class="summary-value" id="sumSupply">₩0</span>
+        <div class="sum-row">
+          <span class="sum-label">공급가액</span>
+          <span class="sum-value" id="sumSupply">₩0</span>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">VAT (10%)</span>
-          <span class="summary-value" id="sumVat">₩0</span>
+        <div class="sum-row">
+          <span class="sum-label">VAT (10%)</span>
+          <span class="sum-value" id="sumVat">₩0</span>
         </div>
-        <div class="summary-row total">
-          <span class="summary-label">최종 견적</span>
-          <span class="summary-value" id="sumFinal">₩0</span>
+        <div class="sum-row final" style="margin-top:12px">
+          <span class="sum-label">최종 견적</span>
+          <span class="sum-value" id="sumFinal">₩0</span>
         </div>
       </div>
     </div>
 
-    <!-- Bank Info -->
-    <div class="bank-section" id="bankSection">
-      <span class="bank-icon">🏦</span>
-      <span class="bank-label">입금계좌</span>
-      <span class="bank-value" id="bankInfo">-</span>
-      <span style="margin-left:16px; color:#888; font-size:12px">견적 유효기간 이내에 납부 부탁드립니다. :)</span>
-    </div>
+  </div><!-- /doc -->
 
-  </div>
+  <!-- ── DB Manager ── -->
+  <div class="dbm">
+    <div class="dbm-header">데이터베이스 관리</div>
+    <div class="dbm-body">
 
-  <!-- DB Manager -->
-  <div class="card db-manager-card">
-    <div class="card-header"><span class="dot"></span>데이터베이스 관리</div>
-    <div class="card-body">
-      <div class="db-tabs">
-        <button class="db-tab active" onclick="switchTab('company')">회사정보</button>
-        <button class="db-tab" onclick="switchTab('client')">거래처DB</button>
-        <button class="db-tab" onclick="switchTab('product')">품목DB</button>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="company" onclick="switchTab(this,'company')">회사정보</button>
+        <button class="tab-btn" data-tab="client" onclick="switchTab(this,'client')">거래처DB</button>
+        <button class="tab-btn" data-tab="product" onclick="switchTab(this,'product')">품목DB</button>
       </div>
 
-      <!-- Company DB -->
-      <div class="db-panel active" id="panel-company">
-        <table class="db-table" id="companyTable">
-          <thead>
-            <tr>
-              <th>회사코드</th><th>회사명</th><th>사업자번호</th><th>대표자</th>
-              <th>이메일</th><th>전화번호</th><th>은행</th><th>계좌번호</th>
-              <th>담당자</th><th>담당자연락처</th><th>담당자이메일</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="companyBody"></tbody>
+      <!-- Company -->
+      <div class="tab-pane active" id="tab-company">
+        <table class="db-table">
+          <thead><tr>
+            <th>코드</th><th>회사명</th><th>사업자</th><th>대표자</th>
+            <th>이메일</th><th>전화</th><th>은행</th><th>계좌번호</th>
+            <th>담당자</th><th>담당자연락처</th><th>담당자이메일</th><th></th>
+          </tr></thead>
+          <tbody id="companyTbody"></tbody>
         </table>
-        <div class="db-add-row">
-          <input id="nc_code" placeholder="회사코드">
-          <input id="nc_name" placeholder="회사명">
-          <input id="nc_biz" placeholder="사업자번호">
-          <input id="nc_ceo" placeholder="대표자">
-          <input id="nc_email" placeholder="이메일">
-          <input id="nc_tel" placeholder="전화번호">
-          <input id="nc_bank" placeholder="은행">
-          <input id="nc_acct" placeholder="계좌번호">
-          <input id="nc_mgr" placeholder="담당자">
-          <input id="nc_mtel" placeholder="담당자연락처">
-          <input id="nc_memail" placeholder="담당자이메일">
-          <button class="btn btn-primary" onclick="addCompany()">추가</button>
+        <div class="add-row-form">
+          <input class="add-input" id="c_code" placeholder="코드">
+          <input class="add-input" id="c_name" placeholder="회사명">
+          <input class="add-input" id="c_biz" placeholder="사업자번호">
+          <input class="add-input" id="c_ceo" placeholder="대표자">
+          <input class="add-input" id="c_email" placeholder="이메일">
+          <input class="add-input" id="c_tel" placeholder="전화">
+          <input class="add-input" id="c_bank" placeholder="은행">
+          <input class="add-input" id="c_acct" placeholder="계좌번호">
+          <input class="add-input" id="c_mgr" placeholder="담당자">
+          <input class="add-input" id="c_mtel" placeholder="담당자연락처">
+          <input class="add-input" id="c_memail" placeholder="담당자이메일">
+          <button class="btn btn-blue" onclick="addCompany()">추가</button>
         </div>
       </div>
 
-      <!-- Client DB -->
-      <div class="db-panel" id="panel-client">
-        <table class="db-table" id="clientTable">
-          <thead>
-            <tr><th>거래처코드</th><th>회사명</th><th>사업자번호</th><th>수신자</th><th>이메일</th><th>전화번호</th><th>주소</th><th>비고</th><th></th></tr>
-          </thead>
-          <tbody id="clientBody"></tbody>
+      <!-- Client -->
+      <div class="tab-pane" id="tab-client">
+        <table class="db-table">
+          <thead><tr>
+            <th>코드</th><th>회사명</th><th>사업자</th><th>수신자</th>
+            <th>이메일</th><th>전화</th><th>주소</th><th>비고</th><th></th>
+          </tr></thead>
+          <tbody id="clientTbody"></tbody>
         </table>
-        <div class="db-add-row">
-          <input id="cl_code" placeholder="거래처코드">
-          <input id="cl_name" placeholder="회사명">
-          <input id="cl_biz" placeholder="사업자번호">
-          <input id="cl_contact" placeholder="수신자">
-          <input id="cl_email" placeholder="이메일">
-          <input id="cl_tel" placeholder="전화번호">
-          <input id="cl_addr" placeholder="주소">
-          <input id="cl_note" placeholder="비고">
-          <button class="btn btn-primary" onclick="addClient()">추가</button>
+        <div class="add-row-form">
+          <input class="add-input" id="cl_code" placeholder="코드">
+          <input class="add-input" id="cl_name" placeholder="회사명">
+          <input class="add-input" id="cl_biz" placeholder="사업자번호">
+          <input class="add-input" id="cl_contact" placeholder="수신자">
+          <input class="add-input" id="cl_email" placeholder="이메일">
+          <input class="add-input" id="cl_tel" placeholder="전화">
+          <input class="add-input" id="cl_addr" placeholder="주소">
+          <input class="add-input" id="cl_note" placeholder="비고">
+          <button class="btn btn-blue" onclick="addClient()">추가</button>
         </div>
       </div>
 
-      <!-- Product DB -->
-      <div class="db-panel" id="panel-product">
-        <table class="db-table" id="productTable">
-          <thead>
-            <tr><th>품목코드</th><th>항목명</th><th>설명</th><th>단가</th><th>단위</th><th>비고</th><th></th></tr>
-          </thead>
-          <tbody id="productBody"></tbody>
+      <!-- Product -->
+      <div class="tab-pane" id="tab-product">
+        <table class="db-table">
+          <thead><tr>
+            <th>코드</th><th>항목명</th><th>설명</th><th>단가</th><th>단위</th><th>비고</th><th></th>
+          </tr></thead>
+          <tbody id="productTbody"></tbody>
         </table>
-        <div class="db-add-row">
-          <input id="pr_code" placeholder="품목코드">
-          <input id="pr_name" placeholder="항목명">
-          <input id="pr_desc" placeholder="설명">
-          <input id="pr_price" placeholder="단가" type="number">
-          <input id="pr_unit" placeholder="단위">
-          <input id="pr_note" placeholder="비고">
-          <button class="btn btn-primary" onclick="addProduct()">추가</button>
+        <div class="add-row-form">
+          <input class="add-input" id="pr_code" placeholder="품목코드">
+          <input class="add-input" id="pr_name" placeholder="항목명">
+          <input class="add-input" id="pr_desc" placeholder="설명">
+          <input class="add-input" id="pr_price" placeholder="단가" type="number">
+          <input class="add-input" id="pr_unit" placeholder="단위" style="max-width:70px">
+          <input class="add-input" id="pr_note" placeholder="비고">
+          <button class="btn btn-blue" onclick="addProduct()">추가</button>
         </div>
       </div>
+
     </div>
   </div>
 
-</div>
+</div><!-- /page -->
 
 <script>
-// ── Data ──────────────────────────────────────────────────────────────────────
-const db = {
+// ── Data ───────────────────────────────────────────────────────────────────────
+const DB = {
   companies: [
     { code:'NOA', name:'(주)노아코퍼레이션', biz:'487-87-02055', ceo:'김소영',
       email:'sogood@noawid.com', tel:'02-1234-5678',
@@ -559,283 +649,220 @@ const db = {
       addr:'서울시 강남구 테헤란로 123', note:'예시 거래처' }
   ],
   products: [
-    { code:'SB-PINK-01', name:'핑크팰리스 스노우볼', desc:'유리구슬10cm', price:11000, unit:'EA', note:'' },
-    { code:'SB-PINK-3D', name:'핑크팰리스 3D모델링/목업', desc:'모델링 수정/3D출력', price:1500000, unit:'EA', note:'' },
-    { code:'SB-PINK-PKG', name:'핑크팰리스 패키지', desc:'600g 하드커버,내부완충제', price:3000, unit:'EA', note:'' },
-    { code:'LOG-PINK-08', name:'물류/관세 8% (핑크팰리스)', desc:'관세 8%, 물류비(3일 운송)', price:1550000, unit:'EA', note:'' },
-    { code:'SB-DZ-01', name:'디트로이트 ZOO 스노우볼', desc:'유리구슬10cm', price:9000, unit:'EA', note:'' },
-    { code:'SB-DZ-3D', name:'디트로이트 ZOO 3D모델링/목업', desc:'모델링 수정/3D출력', price:1500000, unit:'EA', note:'' },
-    { code:'SB-DZ-PKG', name:'디트로이트 ZOO 패키지', desc:'600g 하드커버,내부완충제', price:3000, unit:'EA', note:'' },
-    { code:'LOG-DZ-08', name:'물류/관세 8% (디트로이트 ZOO)', desc:'관세 8%, 물류비(3일 운송)', price:1920000, unit:'EA', note:'' }
+    { code:'SB-PINK-01',  name:'핑크팰리스 스노우볼',           desc:'유리구슬10cm',           price:11000,   unit:'EA', note:'' },
+    { code:'SB-PINK-3D',  name:'핑크팰리스 3D모델링/목업',      desc:'모델링 수정/3D출력',      price:1500000, unit:'EA', note:'' },
+    { code:'SB-PINK-PKG', name:'핑크팰리스 패키지',             desc:'600g 하드커버,내부완충제', price:3000,    unit:'EA', note:'' },
+    { code:'LOG-PINK-08', name:'물류/관세 8% (핑크팰리스)',      desc:'관세 8%, 물류비(3일 운송)',price:1550000, unit:'EA', note:'' },
+    { code:'SB-DZ-01',   name:'디트로이트 ZOO 스노우볼',        desc:'유리구슬10cm',           price:9000,    unit:'EA', note:'' },
+    { code:'SB-DZ-3D',   name:'디트로이트 ZOO 3D모델링/목업',  desc:'모델링 수정/3D출력',      price:1500000, unit:'EA', note:'' },
+    { code:'SB-DZ-PKG',  name:'디트로이트 ZOO 패키지',          desc:'600g 하드커버,내부완충제', price:3000,    unit:'EA', note:'' },
+    { code:'LOG-DZ-08',  name:'물류/관세 8% (디트로이트 ZOO)',  desc:'관세 8%, 물류비(3일 운송)',price:1920000, unit:'EA', note:'' }
   ]
 };
 
 let items = [
-  { name:'핑크팰리스 스노우볼', desc:'유리구슬10cm', price:11000, qty:400, unit:'EA' },
-  { name:'핑크팰리스 3D모델링/목업', desc:'모델링 수정/3D출력', price:1500000, qty:1, unit:'EA' },
-  { name:'핑크팰리스 패키지', desc:'600g 하드커버,내부완충제', price:3000, qty:400, unit:'EA' },
-  { name:'물류/관세 8% (핑크팰리스)', desc:'관세 8%, 물류비(3일 운송)', price:1550000, qty:1, unit:'EA' },
-  { name:'디트로이트 ZOO 스노우볼', desc:'유리구슬10cm', price:9000, qty:700, unit:'EA' },
-  { name:'디트로이트 ZOO 3D모델링/목업', desc:'모델링 수정/3D출력', price:1500000, qty:1, unit:'EA' },
-  { name:'디트로이트 ZOO 패키지', desc:'600g 하드커버,내부완충제', price:3000, qty:700, unit:'EA' },
-  { name:'물류/관세 8% (디트로이트 ZOO)', desc:'관세 8%, 물류비(3일 운송)', price:1920000, qty:1, unit:'EA' }
+  { name:'핑크팰리스 스노우볼',          desc:'유리구슬10cm',            price:11000,   qty:400, unit:'EA' },
+  { name:'핑크팰리스 3D모델링/목업',     desc:'모델링 수정/3D출력',       price:1500000, qty:1,   unit:'EA' },
+  { name:'핑크팰리스 패키지',            desc:'600g 하드커버,내부완충제',  price:3000,    qty:400, unit:'EA' },
+  { name:'물류/관세 8% (핑크팰리스)',    desc:'관세 8%, 물류비(3일 운송)', price:1550000, qty:1,   unit:'EA' },
+  { name:'디트로이트 ZOO 스노우볼',      desc:'유리구슬10cm',            price:9000,    qty:700, unit:'EA' },
+  { name:'디트로이트 ZOO 3D모델링/목업', desc:'모델링 수정/3D출력',       price:1500000, qty:1,   unit:'EA' },
+  { name:'디트로이트 ZOO 패키지',        desc:'600g 하드커버,내부완충제',  price:3000,    qty:700, unit:'EA' },
+  { name:'물류/관세 8% (디트로이트 ZOO)', desc:'관세 8%, 물류비(3일 운송)',price:1920000, qty:1,   unit:'EA' }
 ];
 
-// ── Utils ─────────────────────────────────────────────────────────────────────
+// ── Utils ──────────────────────────────────────────────────────────────────────
 const won = n => '₩' + Math.round(n).toLocaleString('ko-KR');
-const num = s => parseFloat(String(s).replace(/,/g, '')) || 0;
+const toNum = s => parseFloat(String(s).replace(/,/g,'')) || 0;
+const $ = id => document.getElementById(id);
 
 function setToday() {
-  const d = new Date();
-  document.getElementById('quoteDate').value = d.toISOString().slice(0,10);
+  $('metaDate').value = new Date().toISOString().slice(0,10);
 }
 
-// ── Render Items ──────────────────────────────────────────────────────────────
+// ── Render Items ───────────────────────────────────────────────────────────────
 function renderItems() {
-  const tbody = document.getElementById('itemsBody');
+  const tbody = $('itemsBody');
   tbody.innerHTML = '';
   let total = 0;
 
-  items.forEach((item, i) => {
-    const amount = item.price * item.qty;
-    total += amount;
-    const optionsHtml = db.products.map(p =>
-      `<option value="${p.code}" ${p.name === item.name ? 'selected' : ''}>${p.name}</option>`
+  items.forEach((it, i) => {
+    const amt = it.price * it.qty;
+    total += amt;
+
+    const matchedCode = DB.products.find(p => p.name === it.name)?.code || '__custom__';
+    const opts = DB.products.map(p =>
+      `<option value="${p.code}"${p.code===matchedCode?' selected':''}>${p.name}</option>`
     ).join('');
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="center" style="color:#aaa;font-size:12px">${i+1}</td>
-      <td>
-        <select onchange="onProductSelect(${i}, this.value)" style="width:100%;border:1px solid transparent;border-radius:4px;padding:6px 4px;font-size:13px;font-family:inherit;background:transparent;outline:none;cursor:pointer;">
-          <option value="">-- 선택 --</option>
-          ${optionsHtml}
-          <option value="__custom__" ${!db.products.find(p=>p.name===item.name)?'selected':''}>직접입력</option>
+      <td class="col-no" style="text-align:center;font-size:10px;color:#9CA3AF;padding:9px 6px">${i+1}</td>
+      <td class="col-name">
+        <select class="cell-select" onchange="onProductSel(${i},this.value)">
+          <option value="">— 선택 —</option>
+          ${opts}
+          <option value="__custom__"${matchedCode==='__custom__'?' selected':''}>직접입력</option>
         </select>
-        <input type="text" value="${item.name}" placeholder="항목명" oninput="updateItem(${i},'name',this.value)"
-          style="display:${!db.products.find(p=>p.name===item.name)?'block':'none'};margin-top:4px">
+        ${matchedCode==='__custom__'
+          ? `<input class="cell-input name" value="${it.name}" placeholder="항목명" oninput="upd(${i},'name',this.value)" style="border-top:1px solid #F0F2FF">`
+          : ''}
       </td>
-      <td><input type="text" value="${item.desc}" placeholder="설명" oninput="updateItem(${i},'desc',this.value)"></td>
-      <td><input type="text" class="right" value="${item.price.toLocaleString('ko-KR')}" placeholder="단가" oninput="updateItem(${i},'price',this.value)"></td>
-      <td><input type="number" class="right" value="${item.qty}" min="0" oninput="updateItem(${i},'qty',this.value)" style="text-align:right"></td>
-      <td><input type="text" value="${item.unit}" placeholder="단위" oninput="updateItem(${i},'unit',this.value)" style="text-align:center"></td>
-      <td class="amount">${won(amount)}</td>
-      <td class="center"><button class="btn btn-danger" onclick="removeItem(${i})">✕</button></td>
+      <td><input class="cell-input desc" value="${it.desc}" placeholder="설명" oninput="upd(${i},'desc',this.value)"></td>
+      <td class="col-price"><input class="cell-input ta-right" value="${it.price.toLocaleString('ko-KR')}" oninput="upd(${i},'price',this.value)"></td>
+      <td class="col-qty"><input class="cell-input ta-center" type="number" min="0" value="${it.qty}" oninput="upd(${i},'qty',this.value)" style="text-align:center"></td>
+      <td class="col-unit"><input class="cell-input ta-center" value="${it.unit}" oninput="upd(${i},'unit',this.value)"></td>
+      <td class="col-amount cell-amount">${won(amt)}</td>
+      <td class="col-del cell-del"><button class="btn btn-sm btn-danger" onclick="removeItem(${i})">✕</button></td>
     `;
     tbody.appendChild(tr);
   });
 
   const vat = total * 0.1;
   const final = total + vat;
-  document.getElementById('sumItems').textContent = won(total);
-  document.getElementById('sumSupply').textContent = won(total);
-  document.getElementById('sumVat').textContent = won(vat);
-  document.getElementById('sumFinal').textContent = won(final);
-  document.getElementById('itemsTotal').textContent = won(total);
+  $('itemsTotalLabel').textContent = won(total);
+  $('sumTotal').textContent = won(total);
+  $('sumSupply').textContent = won(total);
+  $('sumVat').textContent = won(vat);
+  $('sumFinal').textContent = won(final);
 }
 
-function onProductSelect(i, code) {
-  if (code === '__custom__') {
-    items[i].name = '';
-    items[i].desc = '';
-    items[i].price = 0;
-    items[i].unit = 'EA';
-    renderItems();
-    return;
-  }
-  const p = db.products.find(x => x.code === code);
+function onProductSel(i, code) {
+  const p = DB.products.find(x => x.code === code);
   if (p) {
-    items[i].name = p.name;
-    items[i].desc = p.desc;
-    items[i].price = p.price;
-    items[i].unit = p.unit;
-    renderItems();
+    items[i] = { ...items[i], name:p.name, desc:p.desc, price:p.price, unit:p.unit };
+  } else if (code === '__custom__') {
+    items[i] = { ...items[i], name:'', desc:'', price:0, unit:'EA' };
   }
-}
-
-function updateItem(i, field, val) {
-  if (field === 'price' || field === 'qty') items[i][field] = num(val);
-  else items[i][field] = val;
-  if (field === 'price' || field === 'qty') renderItems();
-  else {
-    // just update amount cell
-    const rows = document.getElementById('itemsBody').rows;
-    if (rows[i]) {
-      const amount = items[i].price * items[i].qty;
-      rows[i].cells[6].textContent = won(amount);
-    }
-    recalcTotals();
-  }
-}
-
-function recalcTotals() {
-  const total = items.reduce((s,it)=>s+it.price*it.qty, 0);
-  const vat = total * 0.1;
-  document.getElementById('sumItems').textContent = won(total);
-  document.getElementById('sumSupply').textContent = won(total);
-  document.getElementById('sumVat').textContent = won(vat);
-  document.getElementById('sumFinal').textContent = won(total+vat);
-  document.getElementById('itemsTotal').textContent = won(total);
-}
-
-function addItem() {
-  items.push({ name:'', desc:'', price:0, qty:1, unit:'EA' });
   renderItems();
 }
 
-function removeItem(i) {
-  items.splice(i, 1);
-  renderItems();
+function upd(i, field, val) {
+  items[i][field] = (field==='price'||field==='qty') ? toNum(val) : val;
+  if (field==='price'||field==='qty') renderItems();
 }
+
+function addItem()   { items.push({name:'',desc:'',price:0,qty:1,unit:'EA'}); renderItems(); }
+function removeItem(i) { items.splice(i,1); renderItems(); }
 
 // ── Dropdowns ─────────────────────────────────────────────────────────────────
-function populateSelects() {
-  const ss = document.getElementById('senderSelect');
-  const rs = document.getElementById('receiverSelect');
-  ss.innerHTML = '<option value="">-- 자사 선택 --</option>' +
-    db.companies.map(c=>`<option value="${c.code}">${c.code} - ${c.name}</option>`).join('');
-  rs.innerHTML = '<option value="">-- 거래처 선택 --</option>' +
-    db.clients.map(c=>`<option value="${c.code}">${c.code} - ${c.name}</option>`).join('');
+function populateSels() {
+  $('senderSel').innerHTML   = '<option value="">— 자사 선택 —</option>' +
+    DB.companies.map(c=>`<option value="${c.code}">${c.code} · ${c.name}</option>`).join('');
+  $('receiverSel').innerHTML = '<option value="">— 거래처 선택 —</option>' +
+    DB.clients.map(c=>`<option value="${c.code}">${c.code} · ${c.name}</option>`).join('');
 }
 
 function fillSender(code) {
-  const c = db.companies.find(x=>x.code===code);
-  if (!c) return;
-  document.getElementById('senderName').textContent = c.name;
-  document.getElementById('senderBiz').textContent = c.biz;
-  document.getElementById('senderCeo').textContent = c.ceo;
-  document.getElementById('senderEmail').textContent = c.email;
-  document.getElementById('senderAddr').textContent = c.addr;
-  document.getElementById('quoteManager').value = `${c.manager} (${c.mtel}, ${c.memail})`;
-  document.getElementById('bankInfo').textContent = `${c.bank} ${c.acct} ${c.holder}`;
+  const c = DB.companies.find(x=>x.code===code); if(!c) return;
+  $('sName').textContent  = c.name;
+  $('sBiz').textContent   = c.biz;
+  $('sCeo').textContent   = c.ceo;
+  $('sEmail').textContent = c.email;
+  $('sAddr').textContent  = c.addr;
+  $('metaMgr').value      = `${c.manager} (${c.mtel}, ${c.memail})`;
+  $('bankDisplay').textContent = `${c.bank} ${c.acct} · ${c.holder}`;
 }
 
 function fillReceiver(code) {
-  const c = db.clients.find(x=>x.code===code);
-  if (!c) return;
-  document.getElementById('receiverName').textContent = c.name;
-  document.getElementById('receiverBiz').textContent = c.biz;
-  document.getElementById('receiverContact').textContent = c.contact;
-  document.getElementById('receiverEmail').textContent = c.email;
-  document.getElementById('receiverAddr').textContent = c.addr;
+  const c = DB.clients.find(x=>x.code===code); if(!c) return;
+  $('rName').textContent    = c.name;
+  $('rBiz').textContent     = c.biz;
+  $('rContact').textContent = c.contact;
+  $('rEmail').textContent   = c.email;
+  $('rAddr').textContent    = c.addr;
 }
 
 // ── DB Tables ─────────────────────────────────────────────────────────────────
 function renderCompanyDB() {
-  const tbody = document.getElementById('companyBody');
-  tbody.innerHTML = '';
-  db.companies.forEach((c,i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+  $('companyTbody').innerHTML = DB.companies.map((c,i)=>`
+    <tr>
       <td>${c.code}</td><td>${c.name}</td><td>${c.biz}</td><td>${c.ceo}</td>
       <td>${c.email}</td><td>${c.tel}</td><td>${c.bank}</td><td>${c.acct}</td>
       <td>${c.manager}</td><td>${c.mtel}</td><td>${c.memail}</td>
-      <td><button class="btn btn-danger" onclick="delCompany(${i})">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
+      <td><button class="btn btn-sm btn-danger" onclick="delCompany(${i})">✕</button></td>
+    </tr>`).join('');
 }
-
 function renderClientDB() {
-  const tbody = document.getElementById('clientBody');
-  tbody.innerHTML = '';
-  db.clients.forEach((c,i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+  $('clientTbody').innerHTML = DB.clients.map((c,i)=>`
+    <tr>
       <td>${c.code}</td><td>${c.name}</td><td>${c.biz}</td><td>${c.contact}</td>
       <td>${c.email}</td><td>${c.tel}</td><td>${c.addr}</td><td>${c.note}</td>
-      <td><button class="btn btn-danger" onclick="delClient(${i})">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
+      <td><button class="btn btn-sm btn-danger" onclick="delClient(${i})">✕</button></td>
+    </tr>`).join('');
 }
-
 function renderProductDB() {
-  const tbody = document.getElementById('productBody');
-  tbody.innerHTML = '';
-  db.products.forEach((p,i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+  $('productTbody').innerHTML = DB.products.map((p,i)=>`
+    <tr>
       <td>${p.code}</td><td>${p.name}</td><td>${p.desc}</td>
       <td>${p.price.toLocaleString('ko-KR')}</td><td>${p.unit}</td><td>${p.note}</td>
-      <td><button class="btn btn-danger" onclick="delProduct(${i})">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
+      <td><button class="btn btn-sm btn-danger" onclick="delProduct(${i})">✕</button></td>
+    </tr>`).join('');
 }
+
+function g(id) { return $(id).value.trim(); }
 
 function addCompany() {
-  const f = id => document.getElementById(id).value.trim();
-  if (!f('nc_code') || !f('nc_name')) return alert('회사코드와 회사명은 필수입니다.');
-  db.companies.push({ code:f('nc_code'), name:f('nc_name'), biz:f('nc_biz'), ceo:f('nc_ceo'),
-    email:f('nc_email'), tel:f('nc_tel'), addr:'', bank:f('nc_bank'), acct:f('nc_acct'),
-    holder:f('nc_name'), manager:f('nc_mgr'), mtel:f('nc_mtel'), memail:f('nc_memail') });
-  ['nc_code','nc_name','nc_biz','nc_ceo','nc_email','nc_tel','nc_bank','nc_acct','nc_mgr','nc_mtel','nc_memail']
-    .forEach(id => document.getElementById(id).value = '');
-  renderCompanyDB(); populateSelects();
+  if (!g('c_code')||!g('c_name')) return alert('코드와 회사명은 필수입니다.');
+  DB.companies.push({ code:g('c_code'), name:g('c_name'), biz:g('c_biz'), ceo:g('c_ceo'),
+    email:g('c_email'), tel:g('c_tel'), addr:'', bank:g('c_bank'), acct:g('c_acct'),
+    holder:g('c_name'), manager:g('c_mgr'), mtel:g('c_mtel'), memail:g('c_memail') });
+  ['c_code','c_name','c_biz','c_ceo','c_email','c_tel','c_bank','c_acct','c_mgr','c_mtel','c_memail']
+    .forEach(id=>$(id).value='');
+  renderCompanyDB(); populateSels();
 }
-
 function addClient() {
-  const f = id => document.getElementById(id).value.trim();
-  if (!f('cl_code') || !f('cl_name')) return alert('거래처코드와 회사명은 필수입니다.');
-  db.clients.push({ code:f('cl_code'), name:f('cl_name'), biz:f('cl_biz'), contact:f('cl_contact'),
-    email:f('cl_email'), tel:f('cl_tel'), addr:f('cl_addr'), note:f('cl_note') });
+  if (!g('cl_code')||!g('cl_name')) return alert('코드와 회사명은 필수입니다.');
+  DB.clients.push({ code:g('cl_code'), name:g('cl_name'), biz:g('cl_biz'), contact:g('cl_contact'),
+    email:g('cl_email'), tel:g('cl_tel'), addr:g('cl_addr'), note:g('cl_note') });
   ['cl_code','cl_name','cl_biz','cl_contact','cl_email','cl_tel','cl_addr','cl_note']
-    .forEach(id => document.getElementById(id).value = '');
-  renderClientDB(); populateSelects();
+    .forEach(id=>$(id).value='');
+  renderClientDB(); populateSels();
 }
-
 function addProduct() {
-  const f = id => document.getElementById(id).value.trim();
-  if (!f('pr_code') || !f('pr_name')) return alert('품목코드와 항목명은 필수입니다.');
-  db.products.push({ code:f('pr_code'), name:f('pr_name'), desc:f('pr_desc'),
-    price:parseFloat(f('pr_price'))||0, unit:f('pr_unit')||'EA', note:f('pr_note') });
-  ['pr_code','pr_name','pr_desc','pr_price','pr_unit','pr_note']
-    .forEach(id => document.getElementById(id).value = '');
+  if (!g('pr_code')||!g('pr_name')) return alert('코드와 항목명은 필수입니다.');
+  DB.products.push({ code:g('pr_code'), name:g('pr_name'), desc:g('pr_desc'),
+    price:parseFloat(g('pr_price'))||0, unit:g('pr_unit')||'EA', note:g('pr_note') });
+  ['pr_code','pr_name','pr_desc','pr_price','pr_unit','pr_note'].forEach(id=>$(id).value='');
   renderProductDB(); renderItems();
 }
 
-function delCompany(i) { if(confirm('삭제하시겠습니까?')) { db.companies.splice(i,1); renderCompanyDB(); populateSelects(); } }
-function delClient(i) { if(confirm('삭제하시겠습니까?')) { db.clients.splice(i,1); renderClientDB(); populateSelects(); } }
-function delProduct(i) { if(confirm('삭제하시겠습니까?')) { db.products.splice(i,1); renderProductDB(); renderItems(); } }
+function delCompany(i) { if(confirm('삭제하시겠습니까?')) { DB.companies.splice(i,1); renderCompanyDB(); populateSels(); } }
+function delClient(i)  { if(confirm('삭제하시겠습니까?')) { DB.clients.splice(i,1);  renderClientDB();  populateSels(); } }
+function delProduct(i) { if(confirm('삭제하시겠습니까?')) { DB.products.splice(i,1); renderProductDB(); renderItems(); } }
 
-// ── Tab ───────────────────────────────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.db-panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('panel-'+name).classList.add('active');
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+function switchTab(btn, name) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $('tab-'+name).classList.add('active');
 }
 
-// ── Reset ─────────────────────────────────────────────────────────────────────
-function resetQuote() {
-  if (!confirm('새 견적서를 작성하시겠습니까? 현재 내용은 초기화됩니다.')) return;
-  document.getElementById('quoteTitle').value = '견적서';
-  document.getElementById('quoteNo').value = 'NO-' + Date.now().toString().slice(-6);
-  document.getElementById('quoteManager').value = '';
-  document.getElementById('senderSelect').value = '';
-  document.getElementById('receiverSelect').value = '';
-  ['senderName','senderBiz','senderCeo','senderEmail','senderAddr'].forEach(id=>document.getElementById(id).textContent='-');
-  ['receiverName','receiverBiz','receiverContact','receiverEmail','receiverAddr'].forEach(id=>document.getElementById(id).textContent='-');
-  document.getElementById('bankInfo').textContent = '-';
+// ── Reset ──────────────────────────────────────────────────────────────────────
+function resetDoc() {
+  if (!confirm('새 견적서를 작성하시겠습니까? 현재 내용이 초기화됩니다.')) return;
+  $('docTitle').value = '견적서';
+  $('metaNo').value = 'NO-' + Date.now().toString().slice(-6);
+  $('metaMgr').value = '';
+  $('senderSel').value = ''; $('receiverSel').value = '';
+  ['sName','sBiz','sCeo','sEmail','sAddr','rName','rBiz','rContact','rEmail','rAddr']
+    .forEach(id=>$(id).textContent='-');
+  $('bankDisplay').textContent = '-';
   items = [{ name:'', desc:'', price:0, qty:1, unit:'EA' }];
-  renderItems();
-  setToday();
+  renderItems(); setToday();
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────────────────────────────
 setToday();
-populateSelects();
+populateSels();
 renderItems();
 renderCompanyDB();
 renderClientDB();
 renderProductDB();
 
-// Pre-select defaults
-document.getElementById('senderSelect').value = 'NOA';
-fillSender('NOA');
-document.getElementById('receiverSelect').value = 'BROSCO';
-fillReceiver('BROSCO');
+$('senderSel').value = 'NOA';   fillSender('NOA');
+$('receiverSel').value = 'BROSCO'; fillReceiver('BROSCO');
 </script>
 </body>
 </html>
